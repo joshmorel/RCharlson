@@ -1,0 +1,10 @@
+Package: healthcarerisk
+Type: Package
+Title: Calculates Charlson index and performs risk adjustment for a series of Canada/Ontario Healthcare quality indicators
+Version: 1.0
+Date: 2015-12-20
+Author: Josh Morel
+Maintainer: Josh Morel <morel.josh@hotmail.com>
+Description: With a current focus on Canadian Hospitals, this package calculates the Charlson Index and performs risk-adjustment on discharge abstract data for certain quality indicators
+License: GPL-3
+LazyData: TRUE
