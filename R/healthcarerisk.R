@@ -22,13 +22,15 @@
 #' Renal disease - 1; Any malignancy, including leukemia and lymphoma - 2; Moderate or severe liver disease - 4; Metastatic solid tumour - 6;
 #' AIDS/HIV - 4
 #'
+#' The maximum weight is 24. The following combinations are mutually exclusive: Mild liver disease & moderate/server liver disease; any malignancy & metastatic solid tumour
+#'
 #' Only diagnosis types 1, W, Y, X are used in calculating Charlson Index.
 #' @export
 
 charlsonindex <- function(abstract_data) {
         required_columns <- c('diag_code_01','diag_code_02','diag_code_03','diag_code_04','diag_code_05', 'diag_code_06', 'diag_code_07', 'diag_code_08', 'diag_code_09', 'diag_code_10', 'diag_code_11', 'diag_code_12', 'diag_code_13', 'diag_code_14', 'diag_code_15', 'diag_code_16', 'diag_code_17', 'diag_code_18', 'diag_code_19', 'diag_code_20', 'diag_code_21', 'diag_code_22', 'diag_code_23', 'diag_code_24', 'diag_code_25'
                               , 'diag_type_01', 'diag_type_02', 'diag_type_03', 'diag_type_04', 'diag_type_05', 'diag_type_06', 'diag_type_07', 'diag_type_08', 'diag_type_09', 'diag_type_10', 'diag_type_11', 'diag_type_12', 'diag_type_13', 'diag_type_14', 'diag_type_15', 'diag_type_16', 'diag_type_17', 'diag_type_18', 'diag_type_19', 'diag_type_20', 'diag_type_21', 'diag_type_22', 'diag_type_23', 'diag_type_24', 'diag_type_25')
-        diag_index <- grep("diag_code_01",colnames(visits))
+        diag_index <- grep("diag_code_01",colnames(abstract_data))
 
         actual_columns <- colnames(abstract_data)[diag_index:(diag_index+49)]
         if (mean(actual_columns == actual_columns) < 1 | is.na(mean(actual_columns == actual_columns))) {
@@ -38,7 +40,7 @@ charlsonindex <- function(abstract_data) {
         abstract_data <- as.data.frame(sapply(abstract_data,function(x) gsub("\\.","",x)),stringsAsFactors=FALSE)
         abstract_data <- as.data.frame(sapply(abstract_data,function(x) ifelse(x=="",NA,x)),stringsAsFactors=FALSE)
 
-        charlson = apply(visits,1,calc_charlsonindex)
+        charlson = apply(abstract_data,1,calc_charlsonindex)
         abstract_data$charlson_index = charlson
         return(abstract_data)
 }
@@ -75,7 +77,7 @@ calc_charlsonindex <- function(diag_row) {
                 liver = "K704|K711|K721|K729|K765|K766|K767|I850|I859|I864|I982"
                 tumour = "C77|C78|C79|C80"
                 aids = "B24|O987"
-                chf_wt = max(grepl(chf,comorbid_diag_codes)*1)
+                chf_wt = max(grepl(chf,comorbid_diag_codes)*2)
                 dementia_wt = max(grepl(dementia,comorbid_diag_codes)*2)
                 cpd_wt = max(grepl(cpd,comorbid_diag_codes)*1)
                 rheum_wt = max(grepl(rheum,comorbid_diag_codes)*1)
@@ -87,7 +89,7 @@ calc_charlsonindex <- function(diag_row) {
                 liver_wt = max(grepl(liver,comorbid_diag_codes)*4)
                 tumour_wt = max(grepl(tumour,comorbid_diag_codes)*6)
                 aids_wt = max(grepl(aids,comorbid_diag_codes)*4)
-                charlson_index_total =  chf_wt + dementia_wt + cpd_wt + rheum_wt + mild_liver_wt + comp_diab_wt + hemiplagia_wt + renal_wt + malignancy_wt + liver_wt + tumour_wt + aids_wt
+                charlson_index_total = max(liver_wt,mild_liver_wt) + max(malignancy_wt,tumour_wt) + chf_wt + dementia_wt + cpd_wt + rheum_wt + comp_diab_wt + hemiplagia_wt + renal_wt + aids_wt
         }
         return(charlson_index_total)
 }

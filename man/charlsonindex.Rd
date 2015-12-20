@@ -26,6 +26,8 @@ Mild liver disease - 2; Diabetes with chronic complications - 1; Hemiplagia or p
 Renal disease - 1; Any malignancy, including leukemia and lymphoma - 2; Moderate or severe liver disease - 4; Metastatic solid tumour - 6;
 AIDS/HIV - 4
 
+The maximum weight is 24. The following combinations are mutually exclusive: Mild liver disease & moderate/server liver disease; any malignancy & metastatic solid tumour
+
 Only diagnosis types 1, W, Y, X are used in calculating Charlson Index.
 }
 \author{
