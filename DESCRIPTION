@@ -1,4 +1,4 @@
-Package: healthcarerisk
+Package: RCharlson
 Type: Package
 Title: Calculates Charlson index and performs risk adjustment for a series of Canada/Ontario Healthcare quality indicators
 Version: 1.0
