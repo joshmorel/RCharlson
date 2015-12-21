@@ -1,2 +1,4 @@
 # healthcarerisk
-Calculates Charlson index and performs risk adjustment for a series of Canada/Ontario Healthcare quality indicators
+With a current focus on Canadian Hospitals, this package calculates the Charlson Index.
+
+The intention is to build on this to calculate risk-adjustment for certain quality indicators such as Readmissions Rate.
