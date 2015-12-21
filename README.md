@@ -1,4 +1,4 @@
-# healthcarerisk
-With a current focus on Canadian Hospitals, this package calculates the Charlson Index.
+# RCharlson
+This package is used to calculate the updated [Charlson Comorbidity Index](http://aje.oxfordjournals.org/content/early/2011/02/17/aje.kwq433.full) for a provided data.frame with the one or more ICD10 diagnosis codes. 
 
-The intention is to build on this to calculate risk-adjustment for certain quality indicators such as Readmissions Rate.
+This package will be extended to include ICD9 and *may* be extended to include functions to perform risk-adjustment for certain  Ontario/Canadian hospital quality indicators such as Readmissions Rate.
