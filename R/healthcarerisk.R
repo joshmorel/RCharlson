@@ -4,8 +4,11 @@
 #' comorbidities required for risk adjusting mortality ratio, readmissions, and other quality indicators.
 #' Codes and updated weights were taken from two Hude Quan articles referenced below.
 #'
-#' @param abstract_data a data.frame requiring 25 ICD-10 diagnosis codes per row with naming convention diag_code_01 - diag_code_25
-#' followed by 25 diagnosis types (as per CIHI coding standards) with naming convetion diag_type_01 - diag_type_25. If less than 25 diagnoses were codes then excess columns should be loaded with NA or an empty string
+#' @param abstract_data a data.frame requiring between 1 and 25 ICD-10 diagnosis codes per row with naming convention diag_code_01 - diag_code_25 in that order
+#' If abstracts have varying number of diagnoses, those with fewer should populate columsn with blank or NA
+#' @param diag_types if TRUE then abstract_data expected to have between 1 and 25 corresponding diagnoses types for each diagnosis code
+#' with naming convention diag_type_01 to diag_type25. Types are coded as per CIHI DAD standards and are used to include only certain diagnoses
+#' in Charlson Index.
 #' @return A data.frame with all columns from abstract_data with with Charlson Index score appended, with values between 0 and 24 (0 is no comorbidities, 24 is all comorbidities)
 #' @references
 #' Hude Quan. Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Med Care, 43(11):1130-9.
@@ -24,41 +27,57 @@
 #'
 #' The maximum weight is 24. The following combinations are mutually exclusive: Mild liver disease & moderate/server liver disease; any malignancy & metastatic solid tumour
 #'
-#' Only diagnosis types 1, W, Y, X are used in calculating Charlson Index.
+#' If diagnosis types used, only 1, W, Y, X are used in calculating Charlson Index.
 #' @export
 
-charlsonindex <- function(abstract_data) {
-        required_columns <- c('diag_code_01','diag_code_02','diag_code_03','diag_code_04','diag_code_05', 'diag_code_06', 'diag_code_07', 'diag_code_08', 'diag_code_09', 'diag_code_10', 'diag_code_11', 'diag_code_12', 'diag_code_13', 'diag_code_14', 'diag_code_15', 'diag_code_16', 'diag_code_17', 'diag_code_18', 'diag_code_19', 'diag_code_20', 'diag_code_21', 'diag_code_22', 'diag_code_23', 'diag_code_24', 'diag_code_25'
-                              , 'diag_type_01', 'diag_type_02', 'diag_type_03', 'diag_type_04', 'diag_type_05', 'diag_type_06', 'diag_type_07', 'diag_type_08', 'diag_type_09', 'diag_type_10', 'diag_type_11', 'diag_type_12', 'diag_type_13', 'diag_type_14', 'diag_type_15', 'diag_type_16', 'diag_type_17', 'diag_type_18', 'diag_type_19', 'diag_type_20', 'diag_type_21', 'diag_type_22', 'diag_type_23', 'diag_type_24', 'diag_type_25')
-        diag_index <- grep("diag_code_01",colnames(abstract_data))
+charlsonindex <- function(abstract_data,diag_types=FALSE) {
+        expected_diag_code_cols <- c('diag_code_01','diag_code_02','diag_code_03','diag_code_04','diag_code_05', 'diag_code_06', 'diag_code_07', 'diag_code_08', 'diag_code_09', 'diag_code_10', 'diag_code_11', 'diag_code_12', 'diag_code_13', 'diag_code_14', 'diag_code_15', 'diag_code_16', 'diag_code_17', 'diag_code_18', 'diag_code_19', 'diag_code_20', 'diag_code_21', 'diag_code_22', 'diag_code_23', 'diag_code_24', 'diag_code_25')
+        actual_diag_code_cols <- grep("diag_code",colnames(abstract_data),value=TRUE)
 
-        actual_columns <- colnames(abstract_data)[diag_index:(diag_index+49)]
-        if (mean(actual_columns == actual_columns) < 1 | is.na(mean(actual_columns == actual_columns))) {
-                stop("diag_code_01 to diag_code_25 and diag_type_01 to diag_type_25 are required in that order")}
+        if(mean(expected_diag_code_cols[1:length(actual_diag_code_cols)] == actual_diag_code_cols) < 1) {
+                stop("at least diag_code_01, up to diag_code_25 required in that order")
+        }
+
+        if(diag_types) {
+                expected_diag_type_cols <- c('diag_type_01', 'diag_type_02', 'diag_type_03', 'diag_type_04', 'diag_type_05', 'diag_type_06', 'diag_type_07', 'diag_type_08', 'diag_type_09', 'diag_type_10', 'diag_type_11', 'diag_type_12', 'diag_type_13', 'diag_type_14', 'diag_type_15', 'diag_type_16', 'diag_type_17', 'diag_type_18', 'diag_type_19', 'diag_type_20', 'diag_type_21', 'diag_type_22', 'diag_type_23', 'diag_type_24', 'diag_type_25')
+                actual_diag_type_cols <- grep("diag_type",colnames(abstract_data),value=TRUE)
+                if(mean(expected_diag_type_cols[1:length(actual_diag_type_cols)] == actual_diag_type_cols) < 1) {
+                        stop("if diag_types=TRUE, at least diag_type_01, up to diag_type_25 required in that order")
+                }
+                if(mean(substr(actual_diag_code_cols, 11, 12) == substr(actual_diag_type_cols, 11, 12)) < 1) {
+                        stop("if diag_types=TRUE, number, order and suffixing of diag_type columns must match diag_code columns")
+                }
+        }
 
         abstract_data <- as.data.frame(sapply(abstract_data,trimws),stringsAsFactors = FALSE)
         abstract_data <- as.data.frame(sapply(abstract_data,function(x) gsub("\\.","",x)),stringsAsFactors=FALSE)
         abstract_data <- as.data.frame(sapply(abstract_data,function(x) ifelse(x=="",NA,x)),stringsAsFactors=FALSE)
 
-        charlson = apply(abstract_data,1,calc_charlsonindex)
+        charlson = apply(abstract_data,1,function(x) calc_charlsonindex(x,diag_types=diag_types))
         abstract_data$charlson_index = charlson
         return(abstract_data)
 }
 
-calc_charlsonindex <- function(diag_row) {
+calc_charlsonindex <- function(diag_row,diag_types) {
 
         diag_codes = toupper(diag_row[grepl("diag_code",names(diag_row))])
-        diag_types = toupper(diag_row[grepl("diag_type",names(diag_row))])
 
-        if(sum(is.na(diag_codes[!is.na(diag_types)])) > 0) {
-                stop(paste("Diagnosis type without corresponding diagnosis code for row ",diag_row[1],collapse=""))
+        if(diag_types) {
+                diag_types = toupper(diag_row[grepl("diag_type",names(diag_row))])
+
+                if(sum(is.na(diag_codes[!is.na(diag_types)])) > 0) {
+                        stop(paste("Diagnosis type without corresponding diagnosis code for row ",diag_row[1],collapse=""))
+                }
+
+                if(sum(is.na(diag_types[!is.na(diag_codes)])) > 0) {
+                        stop(paste("Diagnosis type without corresponding diagnosis code for row ",diag_row[1],collapse=""))
+                }
+                comorbid_diag_codes = diag_codes[diag_types %in% c('1','W','Y','X')]
+        }
+        else {
+                comorbid_diag_codes = diag_codes
         }
 
-        if(sum(is.na(diag_types[!is.na(diag_codes)])) > 0) {
-                stop(paste("Diagnosis type without corresponding diagnosis code for row ",diag_row[1],collapse=""))
-        }
-
-        comorbid_diag_codes = diag_codes[diag_types %in% c('1','W','Y','X')]
 
         if(length(comorbid_diag_codes) == 0) {
                 charlson_index_total = 0

@@ -4,11 +4,15 @@
 \alias{charlsonindex}
 \title{Calculating the Charlson Index}
 \usage{
-charlsonindex(abstract_data)
+charlsonindex(abstract_data, diag_types = FALSE)
 }
 \arguments{
-\item{abstract_data}{a data.frame requiring 25 ICD-10 diagnosis codes per row with naming convention diag_code_01 - diag_code_25
-followed by 25 diagnosis types (as per CIHI coding standards) with naming convetion diag_type_01 - diag_type_25. If less than 25 diagnoses were codes then excess columns should be loaded with NA or an empty string}
+\item{abstract_data}{a data.frame requiring between 1 and 25 ICD-10 diagnosis codes per row with naming convention diag_code_01 - diag_code_25 in that order
+If abstracts have varying number of diagnoses, those with fewer should populate columsn with blank or NA}
+
+\item{diag_types}{if TRUE then abstract_data expected to have between 1 and 25 corresponding diagnoses types for each diagnosis code
+with naming convention diag_type_01 to diag_type25. Types are coded as per CIHI DAD standards and are used to include only certain diagnoses
+in Charlson Index.}
 }
 \value{
 A data.frame with all columns from abstract_data with with Charlson Index score appended, with values between 0 and 24 (0 is no comorbidities, 24 is all comorbidities)
@@ -28,7 +32,7 @@ AIDS/HIV - 4
 
 The maximum weight is 24. The following combinations are mutually exclusive: Mild liver disease & moderate/server liver disease; any malignancy & metastatic solid tumour
 
-Only diagnosis types 1, W, Y, X are used in calculating Charlson Index.
+If diagnosis types used, only 1, W, Y, X are used in calculating Charlson Index.
 }
 \author{
 Josh Morel

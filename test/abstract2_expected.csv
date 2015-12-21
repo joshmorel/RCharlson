@@ -1,0 +1,7 @@
+id,diag_code_01,diag_code_02,diag_code_03,diag_code_04,diag_code_05,diag_code_06,diag_code_07,diag_code_08,diag_code_09,diag_code_10,diag_code_11,diag_type_01,diag_type_02,diag_type_03,diag_type_04,diag_type_05,diag_type_06,diag_type_07,diag_type_08,diag_type_09,diag_type_10,diag_type_11,charlson_index
+1,C04,C09.0,A100,I426,,,,,,,,MRDX,1,1,1,,,,,,,,4
+2,A110,Z100,C090,,,,,,,,,MRDX,1,2,,,,,,,,,0
+3,K704,K711,g810,,,,,,,,,MRDX,1,1,,,,,,,,,6
+4,C04,C09.0,A100,C10,,,,,,,,MRDX,1,1,1,,,,,,,,2
+5,A110,C090,C090,,,,,,,,,MRDX,X,3,,,,,,,,,2
+6,K704,I255,F00,J40,M05,B18,E102,G81,N18,C00,I982,MRDX,1,1,1,1,1,1,1,1,1,1,16
