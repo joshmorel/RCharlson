@@ -50,7 +50,7 @@ charlsonindex <- function(abstract_data,diag_types=FALSE) {
         }
 
         abstract_data <- as.data.frame(sapply(abstract_data,trimws),stringsAsFactors = FALSE)
-        abstract_data <- as.data.frame(sapply(abstract_data,function(x) gsub("\\.","",x)),stringsAsFactors=FALSE)
+        abstract_data <- as.data.frame(sapply(abstract_data,function(x) gsub("\\.|NULL","",x)),stringsAsFactors=FALSE)
         abstract_data <- as.data.frame(sapply(abstract_data,function(x) ifelse(x=="",NA,x)),stringsAsFactors=FALSE)
 
         charlson = apply(abstract_data,1,function(x) calc_charlsonindex(x,diag_types=diag_types))
@@ -111,4 +111,53 @@ calc_charlsonindex <- function(diag_row,diag_types) {
                 charlson_index_total = max(liver_wt,mild_liver_wt) + max(malignancy_wt,tumour_wt) + chf_wt + dementia_wt + cpd_wt + rheum_wt + comp_diab_wt + hemiplagia_wt + renal_wt + aids_wt
         }
         return(charlson_index_total)
+}
+
+#' Calculating Expected Readmissions
+#
+
+predict_readmissions < function(abstract_data) {
+        expected_cols = c("cohort","hig","age","gender","calendar_year","prev_admit_index","fiscal_qtr")
+        if(mean(expected_cols %in% colnames(abstract_data)) < 1) {
+                stop("The abstract data must contain the following required columns - cohort,hig,age,gender,calendar_year,prev_admit_index,fiscal_qtr")
+        }
+        if(!("charlson_index" %in% colnames(abstract_data))) {
+                abstract_data = charlsonindex(abstract_data,diag_types=TRUE)
+        }
+        abstract_data$comorb_index = with(abstract_data,ifelse(charlson_index == 0,0,ifelse(charlson_index >= 3,2,1)))
+        abstract_data$agegroupn = with(abstract_data,ifelse(as.integer(age)>=85,18,as.integer(as.integer(age)/5)+1))
+
+        in_readmission_subset = abstract_data$RIS_Readmission_Denominator == 1
+        abstract_data_hig = abstract_data[in_readmission_subset,]
+        abstract_data = abstract_data[-in_readmission_subset,]
+
+        abstract_data_hig$readm_odds = apply(abstract_data_hig,1,calc_prediction)
+        abstract_data_hig$readm_prob = readm_odds/(readm_odds+1)
+        RR_all_cohorts =  0.164359255
+
+
+}
+
+calc_prediction <- function(abstract_row) {
+        if(class(abstract_row) %in% c("character","matrix")) {
+                abstract_row = as.data.frame(t(abstract_row),stringsAsFactors = FALSE)
+        }
+        expected_cols = c("cohort","hig","agegroupn","gender","calendar_year","prev_admit_index","comorb_index","fiscal_qtr")
+        if(mean(expected_cols %in% colnames(abstract_row)) < 1) {
+                stop("The abstrat data must contain all parameter columns - cohort,hig,agegroupn,gender,calendar_year,prev_admit_index,comorb_index,fiscal_qtr")
+        }
+        abstract_ests = subset(readm_params,cohort==abstract_row$cohort & parameter=="intercept")$estimate
+
+        numeric_cols = abstract_row[,c("agegroupn","calendar_year")]
+        numeric_cols = data.frame(cohort = abstract_row$cohort, column = names(numeric_cols), values = as.numeric(t(numeric_cols)))
+        numeric_cols = merge(numeric_cols,readm_params,by.x=c("cohort","column"),by.y=c("cohort","parameter"))
+        abstract_ests = append(abstract_ests,with(numeric_cols,values*estimate))
+
+        dummy_cols = abstract_row[,c("hig","gender","prev_admit_index","comorb_index","fiscal_qtr")]
+        dummy_cols = data.frame(cohort = abstract_row$cohort, column = names(dummy_cols), values = as.character(t(dummy_cols)))
+        dummy_cols = merge(dummy_cols,readm_params,by.x=c("cohort","column","values"),by.y=c("cohort","parameter","level"))
+
+        abstract_ests = append(abstract_ests,dummy_cols$estimate)
+        estimated_readm_odds = exp(sum(abstract_ests))
+        return(estimated_readm_odds)
 }
