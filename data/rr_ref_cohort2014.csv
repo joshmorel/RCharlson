@@ -1,0 +1,9 @@
+cohort,cohort_desc,RefRR
+ami,Acute Myocardial Infarction,0.178125414
+card,Cardiovascular,0.126471023
+chf,Congestive Heart Failure,0.227926514
+copd,Chronic Obstructive Pulmonary Disease,0.19743578
+cva,Cerebrovascular Accident (Stroke),0.088433796
+dm,Diabetes mellitus,0.14588797
+gi,Gastrointestinal,0.171559542
+pneu,Pneumonia,0.135550704

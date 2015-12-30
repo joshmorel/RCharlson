@@ -1,0 +1,36 @@
+HIG,HIG_LONG_E_DESC,RefRR
+25,Hemorrhagic Event of Central Nervous System,0.104329765
+26,Ischemic Event of Central Nervous System,0.08549595
+28,Unspecified Stroke,0.087617668
+136,Bacterial Pneumonia,0.132520214
+138,Viral/Unspecified Pneumonia,0.125064405
+139c,Chronic Obstructive Pulmonary Disease with Lower Respiratory Infection,0.177818367
+139d,Chronic Obstructive Pulmonary Disease without Lower Respiratory Infection,0.212073838
+143,Disease of Pleura,0.246285714
+193a,Myocardial Infarction/Shock/Arrest with Coronary Angiogram,0.101396616
+193b,Myocardial Infarction/Shock/Arrest with Coronary Angiogram with Comorbid Cardiac Conditions,0.18028466
+194a,Myocardial Infarction/Shock/Arrest without Coronary Angiogram,0.189671676
+194b,Myocardial Infarction/Shock/Arrest without Coronary Angiogram with Comorbid Cardiac Conditions,0.248487821
+196,Heart Failure without Coronary Angiogram,0.227926514
+202,Arrhythmia without Coronary Angiogram,0.139392704
+204a,Unstable Angina/Atherosclerotic Heart Disease without Coronary Angiogram,0.155704231
+204b,Unstable Angina/Atherosclerotic Heart Disease wo Coronary Angiogram w Comorbid Cardiac Conditions,0.227536232
+208a,Angina (except Unstable)/Chest Pain without Coronary Angiogram,0.090979338
+208b,Angina (except Unstable)/Chest Pain without Coronary Angiogram with Comorbid Cardiac Conditions,0.135159011
+231,Minor Upper Gastrointestinal Intervention,0.179671822
+248,Severe Enteritis,0.194984647
+251,Complicated Ulcer,0.185964912
+253,Inflammatory Bowel Disease,0.155756642
+254,Gastrointestinal Hemorrhage,0.14315593
+255,Gastrointestinal Obstruction,0.164548023
+256,Esophagitis/Gastritis/Miscellaneous Digestive Disease,0.144244227
+257,Symptom/Sign of Digestive System,0.167561109
+258,Other Gastrointestinal Disorder,0.171372013
+285,Cirrhosis/Alcoholic Hepatitis,0.349007954
+286,Liver Disease except Cirrhosis/Malignancy,0.172221072
+287,Disorder of Pancreas except Malignancy,0.141712509
+288,Disorder of Biliary Tract,0.171800388
+437a,"Diabetes, Other",0.134985179
+437b,Diabetes with renal complications,0.195121951
+437c,"Diabetes with ophthalmic, neurological, or circulatory complications",0.272835821
+437d,Diabetes with multiple complications,0.133333333
