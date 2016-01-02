@@ -1,8 +1,8 @@
 
 
-setwd("C:/Users/Josh.Josh-PC/Documents/healthcarerisk/test")
+setwd("C:/Users/jmorel/RCharlson/test")
 library(testthat)
-library(healthcarerisk)
+library(RCharlson)
 
 abstract1_expected <- read.csv("abstract1_expected.csv",header=TRUE,stringsAsFactors=FALSE)
 abstract2_expected <- read.csv("abstract2_expected.csv",header=TRUE,stringsAsFactors=FALSE)
@@ -36,3 +36,11 @@ if (mean(actual_columns == actual_columns) < 1 | is.na(mean(actual_columns == ac
 setwd("C:/Users/Josh.Josh-PC/Documents/healthcarerisk/test")
 visits = read.csv("sourcedata_for_charlson.csv",header=TRUE,stringsAsFactors = FALSE)
 
+
+
+#Testing Readmissions
+setwd("~/../RCharlson/test")
+visits_tests <- read.csv("abstract_readmit1_expected.csv",header=TRUE,stringsAsFactors = FALSE)
+visits_tests <- predict_readmissions(visits_tests,prov_ref_rate = 0.164359254690341)
+
+cbind(visits_tests$cohort,round(visits_tests$readm_prob_expected - visits_tests$readm_prob,4))
