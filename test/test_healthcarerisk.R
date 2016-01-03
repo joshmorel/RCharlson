@@ -40,7 +40,10 @@ visits = read.csv("sourcedata_for_charlson.csv",header=TRUE,stringsAsFactors = F
 
 #Testing Readmissions
 setwd("~/../RCharlson/test")
+
 visits_tests <- read.csv("abstract_readmit1_expected.csv",header=TRUE,stringsAsFactors = FALSE)
-visits_tests <- predict_readmissions(visits_tests,prov_ref_rate = 0.164359254690341)
+visits_tests <- predict_readmissions(visits_tests,
+                                     prov_ref_rate = 0.164359254690341,
+                                     readm_model_params_path = "~/../RCharlson/data/hig_readmit_input_model_parameters.csv")
 
 cbind(visits_tests$cohort,round(visits_tests$readm_prob_expected - visits_tests$readm_prob,4))

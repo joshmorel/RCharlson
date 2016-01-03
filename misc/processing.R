@@ -11,7 +11,9 @@ if("RCharlson" %in% rownames(installed.packages())) {
 
 }
 
-predict_readmissions <- function(abstract_data,prov_ref_rate) {
+predict_readmissions <- function(abstract_data,prov_ref_rate,readm_model_params_path) {
+        #create parameters data.frame in global space for re-use by secondary function
+        readm_model_params <<- read.csv(readm_model_params_path,stringsAsFactors = FALSE)
         expected_cols = c("cohort","hig","age","gender","calendar_year","prev_admit_index","fiscal_qtr","hig_readm_denom")
         if(mean(expected_cols %in% colnames(abstract_data)) < 1) {
                 stop("The abstract data must contain the following required columns - cohort,hig,age,gender,calendar_year,prev_admit_index,fiscal_qtr","hig_readm_denom")
@@ -77,7 +79,7 @@ visits_hig <- read.csv("hig_readmit_input_dwh_hig_and_dx.csv",header=TRUE,string
 #Calculate Charlson Index function using only pre-admit comorbidity or transfer diagnosis types, then removing diag cols
 #for workability
 visits_hig <- charlsonindex(visits_hig,diag_types=TRUE)
-visits_hig <- visits_hig[,-grep("diag",colnames(visits_hig))]
+#visits_hig <- visits_hig[,-grep("diag",colnames(visits_hig))]
 
 #2) Load Second Input - GRH Readmissions to Hospital reporting to IDS to identify numerators
 visits_ids = read.csv("hig_readmit_input_ids_readmits.csv",header=TRUE,stringsAsFactors = FALSE)
@@ -188,9 +190,9 @@ visits_hig_readm = visits_prev_admits[visits_hig_readm
 ftable(xtabs(~ prev_admit_index + i.prev_admit_index,data=visits_hig_readm))
 
 #4) Calculated expected readmissions using logistic model provided by HSIMI
-readm_model_params <- read.csv("hig_readmit_input_model_parameters.csv",stringsAsFactors = FALSE)
-
-visits_hig_readm <- predict_readmissions(visits_hig_readm,prov_ref_rate = 0.164359254690341)
+visits_hig_readm <- predict_readmissions(visits_hig_readm,
+                                         prov_ref_rate = 0.164359254690341,
+                                         readm_model_params_path = "hig_readmit_input_model_parameters.csv")
 
 visits_hig_readm[,hig_readm_numer:=as.numeric(hig_readm_numer)]
 
@@ -209,7 +211,7 @@ setwd(outputs_directory)
 write.csv(visits_hig_readm_summary,"hig_readmit_output_summary.csv",row.names=FALSE)
 write.csv(visits_hig_readm,"hig_readmit_output.csv",row.names=FALSE)
 
-#Required fixes
+#Required fixes - DONE
 #Change HIG for COPD to correct 2014 method -- need to re-fix in WinRecs
 #Rename diabetes cohort form 'db' to 'dm'
 #Remove commas from hig_desc as affecting save-to results in SQL Server
